@@ -1,0 +1,36 @@
+{% extends 'board/base.html' %}
+
+{% block content %}
+<h2>📌 글 작성</h2>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <label for="title">제목:</label><br>
+  <input type="text" name="title" id="title" required><br><br>
+
+  <label for="content">내용:</label><br>
+  <textarea name="content" id="content" rows="8" style="width: 100%;" required></textarea><br><br>
+
+  <!-- ✅ 말머리 선택 -->
+  <label for="category">말머리 선택:</label><br>
+  <select name="category" id="category" required>
+    <option value="자유">자유</option>
+    <option value="공지">공지</option>
+    <option value="1학년 둥지">1학년 둥지</option>
+    <option value="2학년 둥지">2학년 둥지</option>
+    <option value="3학년 둥지">3학년 둥지</option>
+  </select>
+  <br><br>
+
+  <!-- 🔗 파일 업로드 -->
+  <label for="file">파일 첨부 (선택):</label><br>
+  <input type="file" name="file" id="file"><br><br>
+
+  <button type="submit">작성하기</button>
+</form>
+
+{% endblock %}
+
+
+

@@ -1,0 +1,111 @@
+
+
+<!-- 말머리 탭 -->
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ board }} 게시판</title>
+  <style>
+    .login-status {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+      font-size: 14px;
+      z-index: 1000;
+    }
+    .admin-name {
+      color: blue;
+      font-weight: bold;
+    }
+    .logout-btn {
+      background: none;
+      border: none;
+      color: blue;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ✅ 로그인 상태 우측 상단 고정 -->
+{% if user.is_authenticated %}
+  <div class="login-status">
+    {% if user.username in ADMIN_USERS %}
+      <span class="admin-name">{{ user.username }}</span> 님 로그인 되셨습니다.<br>
+      전체 회원 수: {{ user_count }}명<br>
+    {% else %}
+      {{ user.username }} 님 로그인 되셨습니다.<br>
+    {% endif %}
+    <form action="{% url 'logout' %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" class="logout-btn">로그아웃</button>
+    </form>
+  </div>
+{% else %}
+  <div class="login-status">
+    <a href="{% url 'login' %}">[로그인]</a>
+  </div>
+{% endif %}
+
+<!-- ✅ 게시판 헤더 -->
+<h1>{{ board }} 게시판</h1>
+
+<!-- ✅ 정렬 기능 -->
+<form method="get">
+  <input type="hidden" name="board" value="{{ board }}">
+  <select name="sort" onchange="this.form.submit()">
+    <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>등록순</option>
+    <option value="views" {% if sort == 'views' %}selected{% endif %}>조회순</option>
+    <option value="likes" {% if sort == 'likes' %}selected{% endif %}>추천순</option>
+  </select>
+</form>
+
+<!-- ✅ 글쓰기 버튼 -->
+{% if user.is_authenticated %}
+  <a href="{% url 'create_post' %}" style="display: inline-block; margin: 10px 0; padding: 8px 12px; background-color: #4CAF50; color: white; border-radius: 4px; text-decoration: none;">
+    글쓰기
+  </a>
+{% else %}
+  <span style="color: gray; font-size: 14px;">※ 로그인 후 글쓰기가 가능합니다.</span>
+{% endif %}
+
+<!-- ✅ 말머리 탭 -->
+<div style="margin-bottom: 20px;">
+  <a href="?board=전체" {% if board == '전체' %}style="font-weight:bold;"{% endif %}>[전체]</a> |
+  <a href="?board=자유" {% if board == '자유' %}style="font-weight:bold;"{% endif %}>[자유]</a> |
+  <a href="?board=공지" {% if board == '공지' %}style="font-weight:bold;"{% endif %}>[공지]</a> |
+  <a href="?board=1학년 둥지" {% if board == '1학년 둥지' %}style="font-weight:bold;"{% endif %}>[1학년 둥지]</a> |
+  <a href="?board=2학년 둥지" {% if board == '2학년 둥지' %}style="font-weight:bold;"{% endif %}>[2학년 둥지]</a> |
+  <a href="?board=3학년 둥지" {% if board == '3학년 둥지' %}style="font-weight:bold;"{% endif %}>[3학년 둥지]</a>
+</div>
+
+<!-- ✅ 게시글 리스트 -->
+{% for post in posts %}
+  <div style="margin-bottom: 20px;">
+    <a href="{% url 'post_detail' post.id %}" style="text-decoration: none; color: black;">
+      {% if post.like_count >= 3 %}
+        <span style="color: gold;">⭐</span>
+      {% endif %}
+      <strong>[{{ post.category }}] {{ post.title }}</strong>
+    </a><br>
+    <small>
+      {% if post.writer in ADMIN_USERS %}
+        <span class="admin-name">{{ post.writer }}</span>
+      {% else %}
+        {{ post.writer }}
+      {% endif %}
+      | {{ post.created_at|date:"Y-m-d H:i" }} |
+      조회 {{ post.view_count }} | 추천 {{ post.like_count }} | 댓글 {{ post.comment_count }}
+    </small>
+  </div>
+{% endfor %}
+
+</body>
+</html>

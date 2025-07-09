@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>커뮤니티</title>
+</head>
+<body>
+  {% if user.is_authenticated %}
+    <div style="position: fixed; top: 10px; right: 20px;">
+      {{ user.username }}님 로그인 되었습니다 |
+      <a href="{% url 'logout' %}">로그아웃</a>
+    </div>
+  {% else %}
+    <div style="position: fixed; top: 10px; right: 20px;">
+      <a href="{% url 'login' %}">로그인</a>
+    </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</body>
+{% if request.path != '/login/' and request.path != '/signup/' %}
+  <div style="position: fixed; top: 10px; right: 20px;">
+    {% if user.is_authenticated %}
+      {{ user.username }}님 로그인 되었습니다 |
+      <a href="{% url 'logout' %}">로그아웃</a>
+    {% else %}
+      <a href="{% url 'login' %}">로그인</a>
+    {% endif %}
+  </div>
+{% endif %}
+<style>
+  .highlighted {
+    background-color: #fff9c4;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid gold;
+  }
+</style>
+
+</html>
