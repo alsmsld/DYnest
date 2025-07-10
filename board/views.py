@@ -1,4 +1,4 @@
-ADMIN_USERS = ['sm102kg', 'sm기무딱', 'smile', 'smplay']
+ADMIN_USERS = ['sm102kg', 'sm갈통', 'smile', 'smplay']
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
