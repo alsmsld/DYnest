@@ -1,4 +1,4 @@
-ADMIN_USERS = ['sm102kg', 'sm기무딱', 'sm.ile']
+ADMIN_USERS = ['sm102kg', 'sm기무딱', 'smile', 'smplay']
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
@@ -15,7 +15,7 @@ def index(request):
 
     if board == '전체':
         # 전체는 둥지를 제외한 글만 보여줌
-        posts = Post.objects.exclude(category__in=['1학년 둥지', '2학년 둥지', '3학년 둥지'])
+        posts = Post.objects.exclude(category__in=['1학년 둥지', '2학년 둥지', '3학년 둥지']) 
     else:
         posts = Post.objects.filter(category=board)
 
@@ -31,12 +31,18 @@ def index(request):
 
     user_count = User.objects.count()
 
+    # ✅ 여기 추가!
+    tab_list = ['전체', '자유', '공지', '1학년 둥지', '2학년 둥지', '3학년 둥지']
+
     return render(request, 'board/index.html', {
         'posts': posts,
         'board': board,
         'user_count': user_count,
         'ADMIN_USERS': ADMIN_USERS,
+        'tab_list': tab_list,  # ✅ 탭 목록 템플릿에 전달
     })
+
+    
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)

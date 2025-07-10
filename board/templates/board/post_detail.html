@@ -1,52 +1,130 @@
-<h1 style="margin-top: 80px; padding-left: 60px;">
-  {% if post.like_count >= 3 %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ post.title }}</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      padding: 40px;
+      background-color: #f9f9f9;
+      line-height: 1.6;
+    }
+    h1 {
+      margin-top: 80px;
+      padding-left: 20px;
+    }
+    .highlighted {
+      background-color: #fff9c4;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .info-bar {
+      font-size: 14px;
+      color: #555;
+      margin: 10px 0;
+    }
+    .admin-name {
+      color: royalblue;
+      font-weight: bold;
+    }
+    .btn {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-top: 10px;
+      font-size: 14px;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .btn-like {
+      background-color: #ff5252;
+      color: white;
+    }
+    .btn-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #2196F3;
+      color: white;
+      z-index: 1000;
+    }
+    .btn-download {
+      color: green;
+    }
+    .comment {
+      background: white;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      padding: 10px;
+    }
+    input[name="writer"] {
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-bottom: 5px;
+    }
+    button {
+      padding: 6px 12px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>
+  {% if post.like_count >= 20 %}
     <span style="color: gold;">⭐</span>
   {% endif %}
   {{ post.title }}
 </h1>
 
-<p class="{% if post.like_count >= 3 %}highlighted{% endif %}">
+<p class="{% if post.like_count >= 20 %}highlighted{% endif %}">
   {{ post.content|linebreaksbr }}
 </p>
 
-<p>
+<p class="info-bar">
   작성자: 
   {% if post.writer in ADMIN_USERS %}
-    <span style="color: blue; font-weight: bold;">{{ post.writer }}</span>
+    <span class="admin-name">{{ post.writer }}</span>
   {% else %}
     {{ post.writer }}
   {% endif %}
-  |
-  조회수: {{ post.view_count }} |
-  추천: {{ post.like_count }} |
-  댓글: {{ post.comments.count }}
+  | 조회수: {{ post.view_count }}
+  | 추천: {{ post.like_count }}
+  | 댓글: {{ post.comments.count }}
 </p>
 
 {% if post.file %}
   <p>
-    <a href="{{ post.file.url }}" download style="color: green;">
-      📎 첨부파일 다운로드
-    </a>
+    <a href="{{ post.file.url }}" download class="btn btn-download">📎 첨부파일 다운로드</a>
   </p>
 {% endif %}
 
 {% if user.is_authenticated %}
-  <a href="{% url 'like_post' post.id %}" style="color: red;">❤️ 추천하기</a>
+  <a href="{% url 'like_post' post.id %}" class="btn btn-like">❤️ 추천하기</a>
 {% else %}
   <span style="color: gray;">※ 로그인해야 추천할 수 있습니다.</span>
 {% endif %}
 
 <hr>
 
-<h3>댓글</h3>
+<h3>💬 댓글</h3>
+
 {% for c in post.comments.all %}
-  <div style="margin-bottom: 10px;">
-    {% if c.writer in ADMIN_USERS %}
-      <span style="color: blue; font-weight: bold;">{{ c.writer }}</span>
-    {% else %}
-      {{ c.writer }}
-    {% endif %}:
-    {{ c.content }} ({{ c.created_at|date:"Y-m-d H:i" }})
+  <div class="comment">
+    <strong>
+      {% if c.writer in ADMIN_USERS %}
+        <span class="admin-name">{{ c.writer }}</span>
+      {% else %}
+        {{ c.writer }}
+      {% endif %}
+    </strong>: {{ c.content }}<br>
+    <small style="color: gray;">({{ c.created_at|date:"Y-m-d H:i" }})</small>
   </div>
 {% empty %}
   <p>댓글이 아직 없습니다.</p>
@@ -55,8 +133,8 @@
 {% if user.is_authenticated %}
   <form method="post" action="{% url 'add_comment' post.id %}" style="margin-top: 20px;">
     {% csrf_token %}
-    <input name="writer" placeholder="작성자" value="{{ user.username }}" readonly><br>
-    <textarea name="content" placeholder="댓글 작성" style="width: 100%; height: 80px;"></textarea><br>
+    <input name="writer" value="{{ user.username }}" readonly><br>
+    <textarea name="content" placeholder="댓글 작성"></textarea><br>
     <button type="submit">댓글 작성</button>
   </form>
 {% else %}
@@ -70,17 +148,9 @@
   </form>
 {% endif %}
 
-<a href="{% url 'index' %}" style="
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  background-color: #2196F3;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  text-decoration: none;
-  z-index: 1000;
-">🏠 홈</a>
+<a href="{% url 'index' %}" class="btn btn-home">🏠 홈</a>
 
+</body>
+</html>
 
 
