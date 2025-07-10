@@ -99,6 +99,12 @@
   | 댓글: {{ post.comments.count }}
 </p>
 
+<!-- 첨부 이미지 표시 -->
+{% if post.image %}
+  <div style="margin-top: 10px;">
+    <img src="{{ post.image.url }}" alt="첨부 이미지" style="max-width: 400px;">
+  </div>
+{% endif %}
 {% if post.file %}
   <p>
     <a href="{{ post.file.url }}" download class="btn btn-download">📎 첨부파일 다운로드</a>
