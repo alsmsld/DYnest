@@ -1,5 +1,3 @@
-ADMIN_USERS = ['sm102kg', 'sm갈통', 'smile', 'smplay']
-
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment
 from django.utils import timezone
@@ -9,29 +7,32 @@ from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
+ADMIN_USERS = ['sm102kg', 'sm갈통', 'smile', 'smplay']
+
 def index(request):
     board = request.GET.get('board', '전체')
-    sort = request.GET.get('sort', 'latest')
+    sort = request.GET.get('sort', 'created_at')  # ✅ 기본값 수정
 
     if board == '전체':
-        # 전체는 둥지를 제외한 글만 보여줌
         posts = Post.objects.exclude(category__in=['1학년 둥지', '2학년 둥지', '3학년 둥지']) 
     else:
         posts = Post.objects.filter(category=board)
 
+    # ✅ 정렬 조건 처리
     if sort == 'likes':
         posts = posts.order_by('-like_count')
     elif sort == 'views':
         posts = posts.order_by('-view_count')
+    elif sort == 'created_at':
+        posts = posts.order_by('-created_at')
     else:
         posts = posts.order_by('-created_at')
 
+    # 댓글 수 미리 계산
     for post in posts:
         post.comment_count = post.comments.count()
 
     user_count = User.objects.count()
-
-    # ✅ 여기 추가!
     tab_list = ['전체', '자유', '공지', '1학년 둥지', '2학년 둥지', '3학년 둥지']
 
     return render(request, 'board/index.html', {
@@ -39,15 +40,13 @@ def index(request):
         'board': board,
         'user_count': user_count,
         'ADMIN_USERS': ADMIN_USERS,
-        'tab_list': tab_list,  # ✅ 탭 목록 템플릿에 전달
+        'tab_list': tab_list,
+        'sort': sort,  # ✅ 템플릿에서 선택 유지용
     })
 
-    
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    
-    # 조회수 증가
     post.view_count += 1
     post.save()
 
@@ -68,7 +67,6 @@ def create_post(request):
             messages.error(request, '말머리를 선택해 주세요.')
             return redirect('create_post')
 
-        # 공지글 제한
         if category == '공지' and request.user.username not in ADMIN_USERS:
             messages.error(request, '공지글은 관리자만 작성할 수 있습니다.')
             return redirect('create_post')
@@ -95,6 +93,7 @@ def add_comment(request, post_id):
         )
     return redirect('post_detail', post_id=post_id)
 
+
 @login_required
 def like_post(request, post_id):
     post = get_object_or_404(Post, pk=post_id)
@@ -105,6 +104,7 @@ def like_post(request, post_id):
         liked_posts.append(post_id)
         request.session['liked_posts'] = liked_posts
     return redirect('post_detail', post_id=post_id)
+
 
 def delete_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -117,6 +117,7 @@ def delete_post(request, post_id):
         return redirect('index')
     return redirect('post_detail', post_id=post_id)
 
+
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -127,7 +128,3 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'board/signup.html', {'form': form})
-
-
-
-
