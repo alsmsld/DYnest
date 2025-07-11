@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: dynest
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn school_community.wsgi:application"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: school_community.settings
+    staticPublishPath: media
