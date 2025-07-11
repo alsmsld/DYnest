@@ -1,0 +1,24 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Django migration files
+*/migrations/__pycache__/
+*.sqlite3
+
+# VSCode settings
+.vscode/
+
+# Environment files
+.env
+*.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+
+
+# Static files (보통은 수동으로 collectstatic 하니까)
+staticfiles/
