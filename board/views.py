@@ -6,6 +6,7 @@ from django.contrib import messages
 from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from .utils import censor_text  # 맨 위에 추가
 
 ADMIN_USERS = ['sm102kg', 'sm갈통', 'smile', 'smplay']
 
@@ -60,6 +61,7 @@ def post_detail(request, post_id):
 
 
 @login_required
+@login_required
 def create_post(request):
     if request.method == 'POST':
         category = request.POST.get('category')
@@ -67,13 +69,14 @@ def create_post(request):
             messages.error(request, '말머리를 선택해 주세요.')
             return redirect('create_post')
 
+        # 공지글 제한
         if category == '공지' and request.user.username not in ADMIN_USERS:
             messages.error(request, '공지글은 관리자만 작성할 수 있습니다.')
             return redirect('create_post')
 
         Post.objects.create(
-            title=request.POST.get('title'),
-            content=request.POST.get('content'),
+            title=censor_text(request.POST.get('title')),
+            content=censor_text(request.POST.get('content')),
             writer=request.user.username,
             category=category,
             file=request.FILES.get('file')
@@ -89,7 +92,7 @@ def add_comment(request, post_id):
         Comment.objects.create(
             post_id=post_id,
             writer=request.user.username,
-            content=request.POST['content'],
+            content=censor_text(request.POST['content']),
         )
     return redirect('post_detail', post_id=post_id)
 
