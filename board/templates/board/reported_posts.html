@@ -1,0 +1,19 @@
+{% extends 'board/base.html' %}
+
+{% block content %}
+  <h2>신고된 게시물 목록</h2>
+
+  {% if reported_posts %}
+    <ul>
+      {% for post in reported_posts %}
+        <li>
+          <a href="{% url 'post_detail' post.id %}">{{ post.title }}</a>
+          - 작성자: {{ post.writer }}
+          - 신고 수: {{ post.report_count }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>신고된 게시물이 없습니다.</p>
+  {% endif %}
+{% endblock %}
