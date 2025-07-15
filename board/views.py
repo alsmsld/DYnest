@@ -136,21 +136,20 @@ def signup(request):
 @login_required
 def report_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
-    if request.method == 'POST':
-        post.report_count += 1
-        post.save()
-        messages.success(request, '게시글이 신고되었습니다.')
-    return redirect('post_detail', post_id=post.id)
-# board/views.py
+    post.report_count += 1
+    post.save()
+    messages.success(request, "해당 게시글을 신고했습니다.")
+    return redirect('post_detail', post_id=post_id)
+
 @login_required
 def reported_posts(request):
     if request.user.username not in ADMIN_USERS:
-        return HttpResponseForbidden("접근 권한이 없습니다.")
-    
-    posts = Post.objects.filter(report_count__gt=0).order_by('-report_count')
+        messages.error(request, "접근 권한이 없습니다.")
+        return redirect('index')
+
+    posts = Post.objects.filter(report_count__gte=1)  # ✅ 신고된 글만 필터링
+
     return render(request, 'board/reported_posts.html', {
-        'posts': posts,
-        'ADMIN_USERS': ADMIN_USERS,
-        'tab_list': ['신고된 글'],  # 필요하면
+        'reported_posts': posts
     })
-    
+
