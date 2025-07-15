@@ -15,11 +15,18 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('login/', auth_views.LoginView.as_view(template_name='board/login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # board/urls.py
+    path('reported/', views.reported_posts, name='reported_posts'),
+    path('post/<int:post_id>/report/', views.report_post, name='report_post')
+
 ]
 
 # MEDIA 파일 서빙 (파일 업로드용)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # board/urls.py
+
+
 
 
 

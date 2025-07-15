@@ -7,6 +7,8 @@ from .forms import SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .utils import censor_text  # 맨 위에 추가
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 ADMIN_USERS = ['sm102kg', 'sm갈통', 'smile', 'smplay']
 
@@ -131,3 +133,24 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'board/signup.html', {'form': form})
+@login_required
+def report_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    if request.method == 'POST':
+        post.report_count += 1
+        post.save()
+        messages.success(request, '게시글이 신고되었습니다.')
+    return redirect('post_detail', post_id=post.id)
+# board/views.py
+@login_required
+def reported_posts(request):
+    if request.user.username not in ADMIN_USERS:
+        return HttpResponseForbidden("접근 권한이 없습니다.")
+    
+    posts = Post.objects.filter(report_count__gt=0).order_by('-report_count')
+    return render(request, 'board/reported_posts.html', {
+        'posts': posts,
+        'ADMIN_USERS': ADMIN_USERS,
+        'tab_list': ['신고된 글'],  # 필요하면
+    })
+    

@@ -157,6 +157,14 @@
 <a href="{% url 'index' %}" class="btn btn-home">🏠 홈</a>
 
 </body>
+<!-- board/post_detail.html -->
+{% if user.is_authenticated %}
+  <form method="post" action="{% url 'report_post' post.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-warning">🚨 신고</button>
+  </form>
+{% endif %}
+
 </html>
 
 

@@ -25,6 +25,7 @@ class Post(models.Model):
     file = models.FileField(upload_to='uploads/', null=True, blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='자유')
     image = models.ImageField(upload_to='images/', blank=True, null=True)
+    report_count = models.PositiveIntegerField(default=0)  # 신고 횟수
    
 
     

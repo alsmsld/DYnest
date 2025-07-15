@@ -89,6 +89,8 @@
       </form>
     </div>
   {% endif %}
+  <a href="{% url 'reported_posts' %}">[신고된 글]</a>
+
 
   <!-- ✅ 말머리 탭 -->
   <div class="tab-links" style="margin-bottom: 20px;">
@@ -97,6 +99,10 @@
       {% if not forloop.last %}|{% endif %}
     {% endfor %}
   </div>
+  {% if user.username in ADMIN_USERS %}
+  <a href="{% url 'reported_posts' %}">[신고된 글]</a>
+{% endif %}
+
 
   <!-- ✅ 정렬 선택 -->
   <form method="get" style="margin-bottom: 20px;">
